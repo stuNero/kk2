@@ -15,7 +15,3 @@ class SmolLM:
         ]
         output = self.pipe(messages, max_new_tokens=500)
         return output[0]['generated_text'][-1]['content']
-
-llm = SmolLM()
-
-print(llm.invoke(prompt="explain in 2 sentences: what is a gpt?"))
