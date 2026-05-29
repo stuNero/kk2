@@ -1,7 +1,7 @@
 from transformers import pipeline
 
 class SmolLM:
-    def __init__(self, model_name="HuggingFaceTB/SmolLM-135M-Instruct"):
+    def __init__(self, model_name="HuggingFaceTB/SmolLM-1.7b-Instruct"):
         print(f"Loading {model_name} into memory...")
         try:
             self.pipe = pipeline("text-generation", model_name)

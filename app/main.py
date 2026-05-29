@@ -4,9 +4,9 @@ from llm import SmolLM
 app = FastAPI()
 llm = SmolLM()
 
-# @app.get("/health")
-# def health():
-#     return {"status":"ok"}
+@app.get("/health")
+def health():
+    return {"status":"ok"}
 
 # @app.post("/data/upload")
 # def UploadFile():
