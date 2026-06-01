@@ -14,7 +14,7 @@ def test_health_returns_ok(client):
     assert resp.json() == {"status": "ok"}
 
 def test_ask_returns_200(client):
-    resp = client.post("ai/ask", json="test")
+    resp = client.post("ai/ask", json={"prompt":"test"})
     assert resp.status_code == 200
     
 def test_upload_returns_200(client):

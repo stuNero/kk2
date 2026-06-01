@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Body, File, HTTPException, UploadFile
 from io import StringIO
 import pandas as pd
-import pydantic
+from pydantic import BaseModel
 
 from .llm import SmolLM
 
@@ -33,7 +33,13 @@ def statistics():
 
     return uploaded_dataset.describe().to_dict()
 
-@app.post("/ai/ask")
-def ask(prompt: str = Body(...)):
-    response = llm.invoke(prompt=prompt)
-    return response
+class AskRequest(BaseModel):
+    prompt: str
+class AskResponse(BaseModel):
+    prompt: str
+    answer: str
+    model: str
+    
+@app.post("/ai/ask", response_model=AskResponse)
+def ask(request: AskRequest):
+    return llm.invoke(prompt=request.prompt)

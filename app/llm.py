@@ -16,7 +16,7 @@ class SmolLM:
         ]
         output = self.pipe(messages, max_new_tokens=500)
         return {
-        "question":prompt,
+        "prompt":prompt,
         "answer":output[0]['generated_text'][-1]['content'],
         "model":self.model_name
     }
