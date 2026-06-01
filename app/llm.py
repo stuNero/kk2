@@ -1,12 +1,13 @@
 from transformers import pipeline
 
 class SmolLM:
-    def __init__(self, model_name="HuggingFaceTB/SmolLM-135M-Instruct"):
+    def __init__(self, model_name="HuggingFaceTB/SmolLM2-360M-Instruct"):
+        self.model_name = model_name
         print(f"Loading {model_name} into memory...")
         try:
             self.pipe = pipeline("text-generation", model_name)
-        except:
-            raise RuntimeError("Failed to load pipeline")
+        except Exception as exc:
+            raise RuntimeError("Failed to load pipeline") from exc
         print(f"{model_name} successfully loaded!")
     def invoke(self, prompt:str):
         messages = [
@@ -14,8 +15,8 @@ class SmolLM:
             {"role":"user", "content":prompt}
         ]
         output = self.pipe(messages, max_new_tokens=500)
-        return output[0]['generated_text'][-1]['content']
-
-llm = SmolLM()
-
-print(llm.invoke(prompt="explain in 2 sentences: what is a gpt?"))
+        return {
+        "prompt":prompt,
+        "answer":output[0]['generated_text'][-1]['content'],
+        "model":self.model_name
+    }
