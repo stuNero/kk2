@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Body, File, HTTPException, UploadFile
-from io import StringIO
+# Package imports
+from fastapi    import FastAPI, Body, File, HTTPException, UploadFile
+from pydantic   import BaseModel
+from io         import StringIO
 import pandas as pd
-from pydantic import BaseModel
+# Project File imports
+from .llm   import SmolLM
 from schema import UploadResponse, StatsResponse, AskRequest, AskResponse
-from .llm import SmolLM
 
 app = FastAPI()
 llm = SmolLM()
