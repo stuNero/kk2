@@ -28,6 +28,17 @@ def test_upload_returns_200(client):
     )
     assert resp.status_code == 200
 
+def test_upload_rejects_non_csv(client):
+    csv_content = "name,age\nMax,30\nSara,25\n"
+
+    resp = client.post(
+        "/data/upload",
+        files={
+            "file": ("people.txt", csv_content, "text/csv")
+        },
+    )
+    assert resp.status_code == 400
+
 def test_stats_returns_described_dataset(client):
     csv_content = "name,age\nMax,30\nSara,25\n"
     df = pd.read_csv(StringIO(csv_content))
