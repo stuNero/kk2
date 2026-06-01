@@ -35,12 +35,15 @@ async def upload_file(file: UploadFile = File(...)):
         "dtypes": uploaded_dataset.dtypes.astype(str).to_dict()
     }
 
-@app.get("/data/stats")
+class StatsResponse(BaseModel):
+    stats: dict[str, dict[str,float]]
+    
+@app.get("/data/stats", response_model=StatsResponse)
 def statistics():
     if uploaded_dataset is None:
         raise HTTPException(status_code=404, detail="Dataset not found")
 
-    return uploaded_dataset.describe().to_dict()
+    return {"stats": uploaded_dataset.describe().to_dict()}
 
 class AskRequest(BaseModel):
     prompt: str

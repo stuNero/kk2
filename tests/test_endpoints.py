@@ -54,5 +54,5 @@ def test_stats_returns_described_dataset(client):
     
     resp = client.get("/data/stats")
     
-    assert resp.json() == df.describe().to_dict()
     assert resp.status_code == 200
+    assert resp.json()["stats"] == df.describe().to_dict()
