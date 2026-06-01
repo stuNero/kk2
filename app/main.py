@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Body, File, HTTPException, UploadFile
 from io import StringIO
 import pandas as pd
+import pydantic
 
 from .llm import SmolLM
 
@@ -18,12 +19,11 @@ async def upload_file(file: UploadFile = File(...)):
     global uploaded_dataset
 
     contents = await file.read()
-    uploaded_dataset = pd.read_csv(StringIO(contents.decode("utf-8")))
-
+    uploaded_dataset = pd.DataFrame(pd.read_csv(StringIO(contents.decode("utf-8"))))
     return {
-        "filename": file.filename,
         "rows": len(uploaded_dataset),
         "columns": list(uploaded_dataset.columns),
+        "dtypes": uploaded_dataset.dtypes.astype(str).to_dict()
     }
 
 @app.get("/data/stats")
