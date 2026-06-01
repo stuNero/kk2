@@ -1,7 +1,7 @@
 from transformers import pipeline
 
 class SmolLM:
-    def __init__(self, model_name="HuggingFaceTB/SmolLM-1.7b-Instruct"):
+    def __init__(self, model_name="HuggingFaceTB/SmolLM2-360M-Instruct"):
         self.model_name = model_name
         print(f"Loading {model_name} into memory...")
         try:
