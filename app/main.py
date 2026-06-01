@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body, File, HTTPException, UploadFile
 from io import StringIO
 import pandas as pd
 from pydantic import BaseModel
-
+from schema import UploadResponse, StatsResponse, AskRequest, AskResponse
 from .llm import SmolLM
 
 app = FastAPI()
@@ -13,11 +13,6 @@ uploaded_dataset: pd.DataFrame = None
 @app.get("/health")
 def health():
     return {"status":"ok"}
-
-class UploadResponse(BaseModel):
-    rows: int
-    cols: list[str]
-    dtypes: dict[str, str]
     
 @app.post("/data/upload", response_model=UploadResponse)
 async def upload_file(file: UploadFile = File(...)):
@@ -35,9 +30,6 @@ async def upload_file(file: UploadFile = File(...)):
         "dtypes": uploaded_dataset.dtypes.astype(str).to_dict()
     }
 
-class StatsResponse(BaseModel):
-    stats: dict[str, dict[str,float]]
-    
 @app.get("/data/stats", response_model=StatsResponse)
 def statistics():
     if uploaded_dataset is None:
@@ -45,13 +37,6 @@ def statistics():
 
     return {"stats": uploaded_dataset.describe().to_dict()}
 
-class AskRequest(BaseModel):
-    prompt: str
-class AskResponse(BaseModel):
-    prompt: str
-    answer: str
-    model: str
-    
 @app.post("/ai/ask", response_model=AskResponse)
 def ask(request: AskRequest):
     return llm.invoke(prompt=request.prompt)
