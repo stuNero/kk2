@@ -5,7 +5,7 @@ from io         import StringIO
 import pandas as pd
 # Project File imports
 from .llm   import SmolLM
-from schema import UploadResponse, StatsResponse, AskRequest, AskResponse
+from .schema import UploadResponse, StatsResponse, AskRequest, AskResponse
 
 app = FastAPI()
 llm = SmolLM()
