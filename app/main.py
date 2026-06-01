@@ -26,6 +26,13 @@ async def upload_file(file: UploadFile = File(...)):
         "columns": list(uploaded_dataset.columns),
     }
 
+@app.get("/data/stats")
+def statistics():
+    if uploaded_dataset is None:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    return uploaded_dataset.describe().to_dict()
+
 @app.post("/ai/ask")
 def ask(prompt: str = Body(...)):
     response = llm.invoke(prompt=prompt)
