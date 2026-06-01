@@ -4,11 +4,10 @@ from pydantic   import BaseModel
 from io         import StringIO
 import pandas as pd
 # Project File imports
-from .llm   import SmolLM
 from .schema import UploadResponse, StatsResponse, AskRequest, AskResponse
+from .llm.chain import chain, PromptBuilderInput
 
 app = FastAPI()
-llm = SmolLM()
 
 uploaded_dataset: pd.DataFrame = None
 
@@ -41,4 +40,15 @@ def statistics():
 
 @app.post("/ai/ask", response_model=AskResponse)
 def ask(request: AskRequest):
-    return llm.invoke(prompt=request.prompt)
+    if uploaded_dataset is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Upload a dataset before asking questions"
+        )
+
+    chain_input = PromptBuilderInput(
+        question=request.question,
+        dataset_stats=uploaded_dataset.describe().to_dict()
+    )
+    
+    return chain.invoke(chain_input)

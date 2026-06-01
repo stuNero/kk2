@@ -9,9 +9,9 @@ class StatsResponse(BaseModel):
     stats: dict[str, dict[str,float]]
     
 class AskRequest(BaseModel):
-    prompt: str
+    question: str
     
 class AskResponse(BaseModel):
-    prompt: str
+    question: str
     answer: str
     model: str
