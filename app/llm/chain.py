@@ -45,7 +45,13 @@ class PromptBuilder(Runnable[PromptBuilderInput, PromptBuilderOutput]):
         Question: 
         {data.question}
         
-        Answer briefly and concisely. 
+        You SHOULD answer briefly and concisely. 
+
+        You SHOULD NOT answer questions about anything other than the 
+        given dataset. 
+        IF question is completely unrelated to dataset, direct them to ask 
+        questions about the dataset instead. 
+        
         """
         return PromptBuilderOutput(
             question=data.question,
