@@ -1,6 +1,11 @@
 # Kunskapskontroll 2 AI-programmering Python Course
 This is a graded project for a school course. 
 
+## Description
+This is a fastapi backend with an AI chatbot ➡️`SmolLM2-360M-Instruct`. 
+You are able to upload a CSV dataset of your choice and ask the bot questions about it.
+You are also able to manually check the stats of your dataset. 
+
 ## Prerequisites
 - `Git Bash`, `powershell` or any other shell
 - `uv` from astral -> https://docs.astral.sh/uv/
@@ -9,7 +14,7 @@ This is a graded project for a school course.
 ## How to run:
 1. Clone repository ➡️`git clone git@github.com:stuNero/kk2.git` and navigate to repo root 
 2. In terminal, run:
-```
+```shell
 uv sync
 fastapi dev
 ```
