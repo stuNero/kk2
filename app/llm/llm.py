@@ -9,14 +9,9 @@ class SmolLM:
         except Exception as exc:
             raise RuntimeError("Failed to load pipeline") from exc
         print(f"{model_name} successfully loaded!")
-    def invoke(self, prompt:str):
+    def invoke(self, prompt: str) -> str:
         messages = [
-            {"role":"system", "content":"You're a socratic AI tutor"},
             {"role":"user", "content":prompt}
         ]
         output = self.pipe(messages, max_new_tokens=500)
-        return {
-        "prompt":prompt,
-        "answer":output[0]['generated_text'][-1]['content'],
-        "model":self.model_name
-    }
+        return output[0]["generated_text"][-1]["content"]
