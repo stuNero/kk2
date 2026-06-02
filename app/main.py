@@ -24,7 +24,15 @@ async def upload_file(file: UploadFile = File(...)):
             detail="Only CSV files are allowed"
         )
     contents = await file.read()
-    uploaded_dataset = pd.DataFrame(pd.read_csv(StringIO(contents.decode("utf-8"))))
+    try:
+        uploaded_dataset = pd.DataFrame(pd.read_csv(StringIO(contents.decode("utf-8"))))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"invalid CSV format: {str(e)}")
+    if len(uploaded_dataset) == 0:
+        raise HTTPException(status_code=400, detail="CSV file is empty")
+    if len(uploaded_dataset.columns) == 0:
+        raise HTTPException(status_code=400, detail="CSV has no columns")
+
     return {
         "rows": len(uploaded_dataset),
         "cols": list(uploaded_dataset.columns),
