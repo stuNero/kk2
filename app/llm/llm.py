@@ -11,7 +11,6 @@ class SmolLM:
         print(f"{model_name} successfully loaded!")
     def invoke(self, prompt: str) -> str:
         messages = [
-            {"role":"system", "content":"You're a socratic AI tutor"},
             {"role":"user", "content":prompt}
         ]
         output = self.pipe(messages, max_new_tokens=500)
