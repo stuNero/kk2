@@ -20,6 +20,9 @@ fastapi dev
 ```
 3. Verify server running by visiting `http://localhost:8000/health`
 
+### Swagger
+`http://localhost:8000/docs` to test following endpoints interactively
+
 ### Endpoints
 - ``/health``
     - Checks if server is running and communicating
