@@ -20,6 +20,9 @@ fastapi dev
 ```
 3. Verify server running by visiting `http://localhost:8000/health`
 
+### Swagger
+`http://localhost:8000/docs` to test following endpoints interactively
+
 ### Endpoints
 - ``/health``
     - Checks if server is running and communicating
@@ -30,3 +33,9 @@ fastapi dev
     - Gives you a breakdown of the statistics of the dataset
 - `/ai/ask`
     - You can ask questions about your uploaded dataset
+
+## Assumptions
+- only one dataset can be uploaded and checked at a time (more uploads overwrites previous)
+- csv files can only be utf-8 encoded
+- internet connection needed for first run
+- df.describe only works with numeric columns so any columns that have only string elements are ignored

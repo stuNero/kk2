@@ -1,16 +1,24 @@
 import pytest
-from fastapi.testclient import TestClient
 import pandas as pd
-from io import StringIO
+from fastapi.testclient import TestClient
+from unittest.mock      import patch, MagicMock
+from io                 import StringIO
+
+mock_pipe = MagicMock()
+mock_pipe.return_value = [[{"generated_text": [
+    {"role": "user", "content": "hello"},
+    {"role": "assistant", "content": "mocked response"}
+]}]]
 
 @pytest.fixture
 def client() -> TestClient:
-    from app.main import app
-    return TestClient(app)
+    with patch("app.llm.llm.pipeline", return_value=mock_pipe):
+        from app.main import app
+        return TestClient(app)
+
 
 @pytest.fixture(autouse=True)
 def reset():
-    """Reset the uploaded dataset before each test"""
     from app import main
     main.uploaded_dataset = None
     yield
@@ -23,16 +31,16 @@ def test_health_returns_ok(client):
 
 def test_ask_returns_200(client):
     csv_content = "name,age\nMax,30\nSara,25\n"
-
     upload_resp = client.post(
         "/data/upload",
         files={"file": ("people.csv", csv_content, "text/csv")},
     )
     assert upload_resp.status_code == 200
     
-    resp = client.post("ai/ask", json={"question":"test"})
+    resp = client.post("/ai/ask", json={"question":"test"})
+    print(resp.json())
     assert resp.status_code == 200
-    
+
 def test_upload_returns_200(client):
     csv_content = "name,age\nMax,30\nSara,25\n"
 

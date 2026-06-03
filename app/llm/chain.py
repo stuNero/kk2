@@ -1,7 +1,9 @@
-from pydantic import BaseModel, ConfigDict, SerializeAsAny
-from typing import Any, Generic, TypeVar
-from .llm import SmolLM
-from ..schema import AskResponse
+# Package imports
+from pydantic   import BaseModel, ConfigDict, SerializeAsAny
+from typing     import Any, Generic, TypeVar
+# Project File imports
+from .llm       import SmolLM
+from ..schema   import AskResponse
 
 I = TypeVar("I")
 M = TypeVar("M")
@@ -90,5 +92,5 @@ class ResponseParser(Runnable[LLMRunnerOutput, AskResponse]):
             answer=answer,
             model=data.model
         )
-
-chain = PromptBuilder() | LLMRunner(llm=SmolLM()) | ResponseParser()
+def build_chain():
+    return PromptBuilder() | LLMRunner(llm=SmolLM()) | ResponseParser()

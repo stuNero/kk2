@@ -2,14 +2,16 @@
 from fastapi    import FastAPI, Body, File, HTTPException, UploadFile
 from pydantic   import BaseModel
 from io         import StringIO
-import pandas as pd
+import pandas   as pd
 # Project File imports
-from .schema import UploadResponse, StatsResponse, AskRequest, AskResponse
-from .llm.chain import chain, PromptBuilderInput
+from .schema    import UploadResponse, StatsResponse, AskRequest, AskResponse
+from .llm.chain import build_chain, PromptBuilderInput
 
 app = FastAPI()
-
 uploaded_dataset: pd.DataFrame = None
+# initialise here so patching covers the model in testing
+chain = build_chain()
+
 
 @app.get("/health")
 def health():
@@ -24,7 +26,15 @@ async def upload_file(file: UploadFile = File(...)):
             detail="Only CSV files are allowed"
         )
     contents = await file.read()
-    uploaded_dataset = pd.DataFrame(pd.read_csv(StringIO(contents.decode("utf-8"))))
+    try:
+        uploaded_dataset = pd.DataFrame(pd.read_csv(StringIO(contents.decode("utf-8"))))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"invalid CSV format: {str(e)}")
+    if len(uploaded_dataset) == 0:
+        raise HTTPException(status_code=400, detail="CSV file is empty")
+    if len(uploaded_dataset.columns) == 0:
+        raise HTTPException(status_code=400, detail="CSV has no columns")
+
     return {
         "rows": len(uploaded_dataset),
         "cols": list(uploaded_dataset.columns),
@@ -46,9 +56,15 @@ def ask(request: AskRequest):
             detail="Upload a dataset before asking questions"
         )
 
-    chain_input = PromptBuilderInput(
-        question=request.question,
-        dataset_stats=uploaded_dataset.describe().to_dict()
-    )
-    
-    return chain.invoke(chain_input)
+    try:
+        chain_input = PromptBuilderInput(
+            question=request.question,
+            dataset_stats=uploaded_dataset.describe().to_dict()
+        )
+        return chain.invoke(chain_input)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid input: [{str(e)}]")
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail=f"Model error: [{str(e)}]")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred while processing your question: [{str(e)}]")
