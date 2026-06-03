@@ -3,7 +3,9 @@ from app.llm.chain import (
                         PromptBuilder, 
                         PromptBuilderOutput, PromptBuilderInput,
                         LLMRunner,
-                        LLMRunnerInput, LLMRunnerOutput
+                        LLMRunnerInput, LLMRunnerOutput,
+                        ResponseParser,
+                        AskResponse
                         )
 from unittest.mock import MagicMock
 
@@ -35,3 +37,17 @@ def test_llmrunner_invoke_preserves_question_and_returns_llm_output():
     assert type(output) == LLMRunnerOutput
     assert output.question == input.question
     assert output.raw_output == "The average age is 25"
+
+def test_responseparser_invoke_strips_whitespace():
+    response_parser = ResponseParser()
+    input = LLMRunnerOutput(
+        question="What is the average age?",
+        raw_output="  The average age is 25.  \n",
+        model="HuggingFaceTB/SmolLM2-360M-Instruct")
+    
+    output = response_parser.invoke(input)
+    
+    assert type(output) == AskResponse
+    assert output.answer == "The average age is 25."
+    assert output.question == input.question
+    assert output.model == input.model
