@@ -51,3 +51,21 @@ def test_responseparser_invoke_strips_whitespace():
     assert output.answer == "The average age is 25."
     assert output.question == input.question
     assert output.model == input.model
+
+def test_runnablesequence_invoke_chains_steps_end_to_end():
+    mock_llm = MagicMock()
+    mock_llm.model_name = "HuggingFaceTB/SmolLM2-360M-Instruct"
+    mock_llm.invoke.return_value = "  The average age is 25.  \n"
+    
+    input = PromptBuilderInput(
+        question= "What is the average age?",
+        dataset_stats={"age": {"mean": 25.0}}
+    )
+
+    chain = PromptBuilder() | LLMRunner.model_construct(llm=mock_llm) | ResponseParser()
+    output = chain.invoke(input)
+    
+    assert type(output) == AskResponse
+    assert output.question == input.question
+    assert output.answer == "The average age is 25."
+    assert output.model == "HuggingFaceTB/SmolLM2-360M-Instruct"
